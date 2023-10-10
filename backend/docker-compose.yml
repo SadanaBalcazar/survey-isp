@@ -1,0 +1,60 @@
+version: '3'
+services:
+  db-survey:
+    image: postgres:15
+    environment:
+      - POSTGRES_USER=survey-user
+      - POSTGRES_PASSWORD=survey-pass
+      - POSTGRES_DB=survey-db
+    ports:
+      - 5433:5432
+
+  survey:
+    build: 
+      context: ../backend/survey
+    depends_on:
+      - db-survey
+    links:
+      - db-survey
+    ports:
+    - 3001:3001
+  
+  db_users:
+    image: postgres:15
+    environment:
+      - POSTGRES_USER=users_user
+      - POSTGRES_PASSWORD=users_pass
+      - POSTGRES_DB=users_db
+    ports:
+      - 5434:5432
+
+  users:
+    build: 
+      context: ../backend/microservices/users
+    links:
+      - db_users
+    depends_on:
+      - db_users
+    ports:
+      - 3002:3002
+
+  # db-notifications:
+  #   image: postgres:15.4-alpino3.18
+  #   environment:
+  #     - POSTGRES_USER: noti-user
+  #     - POSTGRES_PASSWORD: noti-pass
+  #     - POSTGRES_DB: noti-db
+  #   ports:
+  #     - 5435:5432
+
+  # notifications:
+    # build:
+      # context: ../backend/microservices/notifications
+    # ports:
+      # - 3002:3000
+    # depends_on:
+      # - db-notifications
+    # links:
+      # - db-notifications
+  
+  
